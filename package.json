@@ -10,7 +10,7 @@
   "author": "charan",
   "license": "ISC",
   "engines": {
-    "node":"12.6.2"
+    "node":"12.16.2"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

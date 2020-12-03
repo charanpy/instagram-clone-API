@@ -20,7 +20,7 @@ const globalErrorHandler = require("./controllers/errorHandler/error")
 
 //^morgan
 if (process.env.NODE_ENV === 'development') {
-            app.use(morgan("dev"))
+     app.use(morgan("dev"))
 }
 
 app.use(express.json());
@@ -40,7 +40,10 @@ app.use("/api/v1/bookmark", bookmarkRoute)
 app.use("/api/v1/comment", commentRoute);
 
 app.all("*", (req, res, next) => {
-            next(new AppError(`can't find ${req.originalUrl} on this server`, 404))
+     next(new AppError(`can't find ${req.originalUrl} on this server`, 404))
+})
+app.get("/test", (req, res) => {
+     return res.send("hi")
 })
 
 //^global error handler
