@@ -17,11 +17,7 @@ const userSchema = new mongoose.Schema({
                         select: false
             },
 
-            accountType: {
-                        type: String,
-                        enum: ["public", "private"],
-                        default: "public"
-            },
+           
             passwordChangedAt: {
                         type: Date
             },

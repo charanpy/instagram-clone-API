@@ -26,6 +26,9 @@ const handleMulterError = () => {
             return new AppError("Please select only one image", 400)
 }
 
+const handleWebTokenError = () => {
+            return new AppError("Invalid Token.Please register again", 400)
+}
 const sendError = (err, res) => {
 
             if (err.isOperational) {
@@ -66,5 +69,6 @@ module.exports = (err, req, res, next) => {
 
             if (error.name === "MulterError" && error.code === "LIMIT_UNEXPECTED_FILE") error = handleMulterError()
 
+            if (error.name === "JsonWebTokenError") error = handleWebTokenError(error)
             sendError(error, res);
 }

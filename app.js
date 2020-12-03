@@ -2,6 +2,8 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser")
 //const fileUpload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
 
@@ -25,7 +27,8 @@ app.use(express.json());
 //app.use(fileUpload())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-
+app.use(cookieParser())
+app.use(cors());
 cloudinary();
 
 //~routes

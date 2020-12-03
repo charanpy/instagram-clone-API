@@ -125,7 +125,9 @@ exports.deletePost = catchAsync(async (req, res, next) => {
 })
 
 exports.likePost = catchAsync(async (req, res, next) => {
+
             const post = await Post.findById(req.params.id);
+
             if (!post) {
                         return next
                         (
