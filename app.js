@@ -42,9 +42,6 @@ app.use("/api/v1/comment", commentRoute);
 app.all("*", (req, res, next) => {
      next(new AppError(`can't find ${req.originalUrl} on this server`, 404))
 })
-app.get("/test", (req, res) => {
-     return res.send("hi")
-})
 
 //^global error handler
 app.use(globalErrorHandler);
