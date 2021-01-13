@@ -48,26 +48,19 @@ exports.getProfiles = catchAsync(async (req, res, next) => {
 
 exports.updateProfile = catchAsync(async (req, res, next) => {
 
-    const errors = validationResult(req);
 
-            //^Checking validation errors
-            if (!errors.isEmpty()) {
-                return next(new AppError(errors.array()[0].msg, 400))
-            }
+    const updatedProfile = await Profile.findOneAndUpdate({ user: req.user.id }, req.body, {
+        new: true,
+        runValidators: true
+    })
+    return res.status(200).json({
+        status: "success",
+        data: {
+            profile: updatedProfile
+        }
+    })
 
-
-            const updatedProfile = await Profile.findOneAndUpdate({ user: req.user.id }, req.body, {
-                new: true,
-                runValidators: true
-            })
-            return res.status(200).json({
-                status: "success",
-                data: {
-                    profile: updatedProfile
-                }
-            })
-
-        })
+})
 
 exports.getProfileById = catchAsync(async (req, res, next) => {
     const profile = await Profile.findById(req.params.userId)
@@ -163,7 +156,7 @@ const followRequest = async(id,profile)=> {
         $push: { requests: profile }
     }, { new: true })
     if (!request) return next(new AppError("User not found", 400))
-     
+       
         return request
     
 }
@@ -175,28 +168,28 @@ exports.follow = catchAsync(async (req, res, next) => {
             ))
     
     if(req.body.accountType ==="private") {
-     const request=  followRequest(req.body.id,req.profile) 
+       const request=  followRequest(req.body.id,req.profile) 
 
-     return res.status(200).json({
-         data:request
-     })
- }
+       return res.status(200).json({
+           data:request
+       })
+   }
 
- await Profile.findByIdAndUpdate(req.body.id, {
+   await Profile.findByIdAndUpdate(req.body.id, {
     $push: { followers: req.profile }
 }, { new: true })
 
- const following = await Profile.findOneAndUpdate({ user: req.user.id }, {
+   const following = await Profile.findOneAndUpdate({ user: req.user.id }, {
     $push: {
         following: req.body.id
     }
 }, { new: true })
 
- res.status(200).json({
+   res.status(200).json({
     status: "success",
     following
 })
- 
+   
 })
 //Todo unfollow
 exports.unfollow = catchAsync(async (req, res, next) => {
