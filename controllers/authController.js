@@ -15,9 +15,9 @@ exports.signUpValidations = (req, res, next) => {
           req.body.passwordChangedAt ||
           req.body.passwordResetToken ||
           req.body.passwordResetExpires
-     ) return next(new AppError("This is invalid route for changing password", 400))
+          ) return next(new AppError("This is invalid route for changing password", 400))
 
-     next();
+          next();
 }
 
 //Authentication
@@ -26,48 +26,48 @@ exports.protect = async (req, res, next) => {
      if (
           req.headers.authorization &&
           req.headers.authorization.startsWith("Bearer")
-     ) {
+          ) {
           token = req.headers.authorization.split(' ')[1];
-     }
-     console.log(2, token)
-     if (!token) {
-          return next
-               (
-                    new AppError("You are not logged in.Please login to get access", 401)
-               )
-     }
+}
+console.log(2, token)
+if (!token) {
+     return next
+     (
+          new AppError("You are not logged in.Please login to get access", 401)
+          )
+}
 
-     const decoded = await promisify
-          (jwt.verify)(token, process.env.JWT_LOGIN_TOKEN);
+const decoded = await promisify
+(jwt.verify)(token, process.env.JWT_LOGIN_TOKEN);
 
-     const freshUser = await User.findById(decoded.id);
+const freshUser = await User.findById(decoded.id);
 
-     if (!freshUser) {
-          return next
-               (
-                    new AppError("User does not exist", 401)
-               )
-     }
+if (!freshUser) {
+     return next
+     (
+          new AppError("User does not exist", 401)
+          )
+}
 
-     req.user = freshUser;
+req.user = freshUser;
 
-     next();
+next();
 }
 
 //create profile after login
 const createProfile = async (id, email) => {
      const profile = await Profile.findOne(
-          {
-               user: id
-          }
+     {
+          user: id
+     }
      )
 
      if (!profile) {
           const profile = await Profile.create(
-               {
-                    user: id,
-                    username: email
-               })
+          {
+               user: id,
+               username: email
+          })
           // await User.findByIdAndUpdate(id, { profile: _id })
           return profile;
      }
@@ -94,14 +94,14 @@ exports.register = catchAsync(async (req, res, next) => {
      //^Checking validation errors
      if (!errors.isEmpty()) {
           return next
-               (
-                    new AppError(errors.array()[0].msg, 400)
+          (
+               new AppError(errors.array()[0].msg, 400)
                )
      }
      if (req.body.isAuthenticated) {
           return next
-               (
-                    new AppError("Not Authorized", 400)
+          (
+               new AppError("Not Authorized", 400)
                )
      }
      //^Generating token
@@ -109,7 +109,7 @@ exports.register = catchAsync(async (req, res, next) => {
      if (user) {
           return next(
                new AppError("Email already taken", 400)
-          )
+               )
      }
 
      let otpForEmailVerification = parseInt(Math.random() * 1000000);
@@ -120,15 +120,15 @@ exports.register = catchAsync(async (req, res, next) => {
      })
 
      const message = `Your verification code for Instagram-clone application 
-               is ${otpForEmailVerification}.
-            `;
+     is ${otpForEmailVerification}.
+     `;
      try {
           await sendEmail(
-               {
-                    email: req.body.email,
-                    subject: "Email Verification for Instagram clone",
-                    message
-               })
+          {
+               email: req.body.email,
+               subject: "Email Verification for Instagram clone",
+               message
+          })
 
           res.status(200).json({
                status: 'success',
@@ -138,8 +138,8 @@ exports.register = catchAsync(async (req, res, next) => {
           console.log(e)
 
           return next
-               (
-                    new AppError("Error sending email.Try again later", 500)
+          (
+               new AppError("Error sending email.Try again later" + e, 500)
                )
      }
 
@@ -155,8 +155,8 @@ exports.activateAccount = catchAsync(async (req, res, next) => {
      //^Checking validation errors
      if (!errors.isEmpty()) {
           return next
-               (
-                    new AppError(errors.array()[0].msg, 400)
+          (
+               new AppError(errors.array()[0].msg, 400)
                )
      }
 
@@ -165,8 +165,8 @@ exports.activateAccount = catchAsync(async (req, res, next) => {
      const checkOtpIsValid = await Otp.findOne({ OtpInsta: otp, isAuthenticated: false });
      if (!checkOtpIsValid) {
           return next
-               (
-                    new AppError("Invalid Otp", 400)
+          (
+               new AppError("Invalid Otp", 400)
                )
      }
      checkOtpIsValid.isAuthenticated = true;
@@ -200,8 +200,8 @@ exports.activate = catchAsync(async (req, res, next) => {
      //^Checking validation errors
      if (!errors.isEmpty()) {
           return next
-               (
-                    new AppError(errors.array()[0].msg, 400)
+          (
+               new AppError(errors.array()[0].msg, 400)
                )
      }
      const isEmailVerified = await Otp.findOne({
@@ -211,8 +211,8 @@ exports.activate = catchAsync(async (req, res, next) => {
      console.log(isEmailVerified)
      if (!isEmailVerified) {
           return next
-               (
-                    new AppError("Email is not verified", 400)
+          (
+               new AppError("Email is not verified", 400)
                )
      }
      await Otp.deleteMany({
@@ -240,39 +240,39 @@ exports.login = catchAsync(async (req, res, next) => {
      //^Checking validation errors
      if (!errors.isEmpty()) {
           return next
-               (
-                    new AppError(errors.array()[0].msg, 400)
+          (
+               new AppError(errors.array()[0].msg, 400)
                )
      }
      const user = await User.findOne(
-          {
-               email: req.body.email
-          }).select("+password");
+     {
+          email: req.body.email
+     }).select("+password");
 
      if (
           !user ||
           !(await user.comparePassword(req.body.password, user.password))
-     ) {
+          ) {
           return next(new AppError("Invalid email or password", 400))
+}
+
+const profile = await createProfile(user._id, user.email)
+
+const token = generateToken({
+     id: user._id
+
+}, process.env.JWT_LOGIN_TOKEN, "1d")
+
+
+
+res.status(200).json({
+     status: "success",
+     data: {
+          token,
+          profile
+
      }
-
-     const profile = await createProfile(user._id, user.email)
-
-     const token = generateToken({
-          id: user._id
-
-     }, process.env.JWT_LOGIN_TOKEN, "1d")
-
-
-
-     res.status(200).json({
-          status: "success",
-          data: {
-               token,
-               profile
-
-          }
-     })
+})
 })
 
 exports.getUsers = catchAsync(async (req, res, next) => {
@@ -306,9 +306,9 @@ exports.myProfile = catchAsync(async (req, res, next) => {
      const profile = await Profile.findOne({ user: req.user.id });
      if (!profile) next(
           new AppError("No user found", 400)
-     )
-     res.status(200).json({
-          profile
-     })
+          )
+          res.status(200).json({
+               profile
+          })
 
 })
