@@ -1,8 +1,18 @@
 import alertActionTypes from './alert.type';
 
-export const setAlert = (id, msg) => ({
+export const setAlertStart = (id) => ({
+  type: alertActionTypes.SET_ALERT_START,
+  payload: id,
+});
+
+export const setAlert = (id, msg, success = false) => ({
   type: alertActionTypes.SET_ALERT,
-  payload: { id, msg },
+  payload: { id, msg, success },
+});
+
+export const removeAlertStart = (id) => ({
+  type: alertActionTypes.REMOVE_ALERT_START,
+  payload: id,
 });
 
 export const removeAlert = (id) => ({

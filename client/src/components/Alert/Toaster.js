@@ -1,28 +1,35 @@
 import React, { useEffect } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import { removeAlertStart } from '../../redux-sagas/alert/alert.action';
 
-const options = {
-  type: toast.POSITION.TOP_CENTER,
+const options = (close, id) => ({
+  toastId: id,
+  position: 'top-right',
   autoClose: 5000,
   hideProgressBar: false,
-  closeOnClick: true,
-};
+  closeOnClick: false,
+  onClose: () => close(id),
+  newestOnTop: false,
+});
 
-const Toaster = ({ message, success }) => {
+const Toaster = ({ message, success, removeAlertStart: removeAlert, id }) => {
   useEffect(() => {
-    toast.configure();
+    console.log('Toas');
     if (success) {
-      toast.success(message, options);
+      toast.configure();
+
+      toast.success(message, options(removeAlert));
       return true;
     }
-    toast.error(message, options);
+    toast.configure();
+    toast.error(message, options(removeAlert, id));
     return true;
-  }, [message, success]);
+  }, [message, success, removeAlert, id]);
   return (
     <>
-      <ToastContainer />
+      <div />
     </>
   );
 };
@@ -30,10 +37,16 @@ const Toaster = ({ message, success }) => {
 Toaster.propTypes = {
   message: PropTypes.string.isRequired,
   success: PropTypes.bool,
+  removeAlertStart: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 Toaster.defaultProps = {
   success: false,
 };
 
-export default Toaster;
+const mapDispatchToProps = (dispatch) => ({
+  removeAlertStart: (id) => dispatch(removeAlertStart(id)),
+});
+
+export default connect(null, mapDispatchToProps)(Toaster);

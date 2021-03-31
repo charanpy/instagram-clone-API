@@ -16,6 +16,8 @@
     "linebreak-style": 0,
     "no-console": "off",
     "no-alert": "off",
+    "no-underscore-dangle": "off",
+    "no-confusing-arrow": "off",
     "comma-dangle": "off",
     "operator-linebreak": "off",
     // 'padded-blocks': 'off',
@@ -26,7 +28,7 @@
     "jsx-quotes": ["error", "prefer-single"],
     "react/jsx-props-no-spreading": "off",
     // "global-require": "off",
-    // 'implicit-arrow-linebreak': 'off',
+    "implicit-arrow-linebreak": "off",
     "object-curly-newline": "off"
   }
 }

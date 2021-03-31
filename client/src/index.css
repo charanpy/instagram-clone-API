@@ -3,6 +3,11 @@ html {
   overflow-y: scroll;
 }
 
+::-webkit-scrollbar {
+  display: none;
+  width: 0px;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -20,10 +25,7 @@ a{
 
 @font-face {
   font-family: 'Billabong';
-  src: local('Billabong'), url(./fonts/Billabong.ttf) format('ttf');
-}
-.Toastify__toast-container {
-  background-color: red;
+  src: local('Billabong'), url(./assets/fonts/Billabong.ttf) format('ttf');
 }
 .Toastify__toast-body {
   font-family: 'Open Sans Condensed', sans-serif !important;
@@ -31,6 +33,31 @@ a{
   font-size: 1.6rem !important;
 }
 
-.Toastify, .Toast {
-  z-index: 1000;
+#theme-light,
+#theme-dark,
+#send_file {
+  display: none;
+}
+
+p{
+  margin: 0;
+  padding:0;
+}
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
+
 }

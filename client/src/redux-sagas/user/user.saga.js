@@ -1,4 +1,4 @@
-import { takeLatest, put, all, call, delay } from 'redux-saga/effects';
+import { takeLatest, put, all, call } from 'redux-saga/effects';
 import PrivateApiRoutes from '../../ApiRoutes/PrivateApi';
 import { userActionTypes } from './user.type';
 import {
@@ -12,13 +12,8 @@ import {
   signOutFailure,
 } from './user.action';
 import { setUserProfile, emptyUpProfile } from '../profile/profile.action';
-import { setAlert, removeAlert } from '../alert/alert.action';
+import { setAlert } from '../alert/alert.action';
 import { generateUniqueId as getUniqueId } from '../../helpers/helpers';
-
-export function* cleanUpAlertMessage(id) {
-  yield delay(7000);
-  yield put(removeAlert(id));
-}
 
 export function* registerAccount(payload) {
   try {
@@ -26,14 +21,19 @@ export function* registerAccount(payload) {
     const {
       payload: { email, password },
     } = payload;
-    yield call(
+    const res = yield call(
       PrivateApiRoutes,
-      'users/signUpWeb',
+      'users/signup',
       { email, password },
       'post',
       false,
       false
     );
+    console.log(res?.data, 33);
+    if (res?.data?.status === 'success') {
+      const id = getUniqueId();
+      setAlert(id, 'Registred.Please Login!', true);
+    }
     yield put(registerSuccess());
   } catch (e) {
     const id = getUniqueId();
@@ -41,7 +41,6 @@ export function* registerAccount(payload) {
     console.log(e, e?.response, e?.response?.data);
     yield put(registerFailure());
     yield put(setAlert(id, e.response.data.message));
-    yield call(cleanUpAlertMessage, id);
   }
 }
 
@@ -93,7 +92,6 @@ export function* onLogin(payload) {
     yield put(loginFailure());
     console.log(e);
     yield put(setAlert(id, e.response.data.message));
-    yield call(cleanUpAlertMessage, id);
   }
 }
 

@@ -7,7 +7,6 @@ const Input = React.forwardRef(
     <TextInput
       name={name}
       type={type}
-      autoFocus
       required='required'
       placeholder={placeholder}
       ref={ref}

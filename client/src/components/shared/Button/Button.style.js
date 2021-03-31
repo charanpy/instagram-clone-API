@@ -9,12 +9,12 @@ const Button = styled.button`
   width: 22rem;
   outline: none;
   transition: all 500ms ease-in-out;
-  /* margin-bottom: 1.24rem; */
+  margin-top: 1.24rem;
   font-family: 'Open Sans Condensed', sans-serif;
   font-weight: 400;
   font-size: 1.6rem;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
   font-weight: 600;
 
   &:hover {

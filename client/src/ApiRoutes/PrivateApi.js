@@ -38,8 +38,6 @@ const ApiRequest = async (
   const config = {
     headers,
   };
-  console.log(route, body, methodType);
-  console.log(url, request, userToken, bodyOfRequest, config);
   // eslint-disable-next-line
   const response =
     methodType !== 'get'

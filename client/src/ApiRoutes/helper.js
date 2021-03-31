@@ -4,7 +4,9 @@ const ApiRequestMethod = {
   post: axios.post,
   put: axios.put,
   get: axios.get,
-  url: 'https://instamernclone.herokuapp.com/api/v1/'
+  patch: axios.patch,
+  url: 'http://localhost:3001/api/v1/',
+  mainURL: 'https://instamernclone.herokuapp.com/api/v1/',
 };
 
 export default ApiRequestMethod;

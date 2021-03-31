@@ -44,7 +44,7 @@ export const selectIsAuthenticated = createSelector(
 
 export const selectUserId = createSelector(
   [selectUser],
-  (userId) => userId.user.profileId
+  (userId) => userId?.user?.user
 );
 
 export const selectUserProfile = createSelector(

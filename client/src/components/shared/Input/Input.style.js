@@ -1,13 +1,13 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-const Input = styled.input`
+export const SharedInput = css`
   padding: 10px;
-  border: none;
+  border: ${(props) => (props.mode ? 'none' : '.5px solid #212529')};
   background: rgba(255, 255, 255, 0.9);
   width: 20rem;
   outline: none;
   transition: all 500ms ease-in-out;
-  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
   border-radius: 4px;
   &:active,
   &:focus {
@@ -20,6 +20,9 @@ const Input = styled.input`
     font-size: 1.4rem;
     color: #212529;
   }
+`;
+const Input = styled.input`
+  ${SharedInput}
 `;
 
 export default Input;

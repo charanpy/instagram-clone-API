@@ -6,14 +6,22 @@ import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import { selectIsAuthenticated } from '../redux-sagas/user/user.selector';
 
-const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
-  <Route
-    {...rest}
-    render={(props) =>
-      isAuthenticated ? <Component {...props} /> : <Redirect to='/auth' />
-    }
-  />
-);
+const PrivateRoute = ({
+  component: Component,
+  routeName = null,
+  isAuthenticated,
+  ...rest
+}) => {
+  console.log(routeName);
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        isAuthenticated ? <Component {...props} /> : <Redirect to='/auth' />
+      }
+    />
+  );
+};
 
 PrivateRoute.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
