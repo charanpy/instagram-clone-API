@@ -10,15 +10,12 @@ const app = require('./app');
 //^Mongoose connection
 
 mongoose
-  .connect(
-    'mongodb+srv://dev:KVDuR1kTXnrJClY2@cluster0.3qpby.mongodb.net/Instagram?retryWrites=true&w=majority',
-    {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect('', {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log('Db connected');
   })
