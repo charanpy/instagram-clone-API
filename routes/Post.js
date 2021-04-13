@@ -15,7 +15,7 @@ const upload = require('../utils/multer');
 
 router
   .route('/')
-  .get(getAllPost)
+  .get(protect, getProfileId, getAllPost)
   .post(protect, getProfileId, upload.array('image'), createPost);
 
 router.route('/:id').get(getPostById).delete(protect, deletePost);

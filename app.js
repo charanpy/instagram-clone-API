@@ -20,9 +20,9 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorHandler/error');
 
 //^morgan
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// if (process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// }
 
 app.use(express.json());
 //app.use(fileUpload())
@@ -42,7 +42,7 @@ app.use('/api/v1/comment', commentRoute);
 app.use('/api/v1/group', groupRoute);
 
 app.all('*', (req, res, next) => {
-  next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
+	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
 //^global error handler

@@ -5,6 +5,8 @@ const AppError = require('../utils/appError');
 const fileUpload = require('../utils/fileUpload');
 const cloudinary = require('cloudinary').v2;
 const Post = require('../models/Post');
+const Message = require('../models/Messages');
+const Notification = require('../models/Notification');
 
 exports.profileValidations = (req, res, next) => {
   if (req.body.accountType)
@@ -19,9 +21,9 @@ const deletePhotoCloudinary = async (id) =>
   await cloudinary.uploader.destroy(id);
 
 const uploadPhotoCloudinary = async (file) => {
-  if (file.mimetype.slice(0, 5) === 'video') {
-    return next(new AppError('Please upload valid image', 400));
-  }
+  // if (file.mimetype.slice(0, 5) === 'video') {
+  //   return next(new AppError('Please upload valid image', 400));
+  // }
   const { public_id, secure_url } = await fileUpload(file);
 
   return {
@@ -78,8 +80,22 @@ exports.getProfileById = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getProfileByName = catchAsync(async (req, res, next) => {
+  const profile = await Profile.findOne({ username: req.params.name });
+
+  if (!profile) {
+    return next(new AppError('No profile found', 400));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      profile,
+    },
+  });
+});
+
 exports.uploadPhoto = catchAsync(async (req, res, next) => {
-  console.log(req.file);
   const photo = await uploadPhotoCloudinary(req.file);
 
   const profile = await Profile.findOneAndUpdate(
@@ -93,6 +109,29 @@ exports.uploadPhoto = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.messagePhoto = catchAsync(async (req, res, next) => {
+  const photo = await uploadPhotoCloudinary(req.file);
+  if (!message) {
+    return next(new AppError('Message should not empty', 400));
+  }
+  const newMessage = await Message.create({
+    message: photo,
+    sender: req.profile,
+    groupId: req.params.groupId,
+    to: req.params.to,
+  });
+
+  const populatedMessage = await newMessage
+    .populate({
+      path: 'sender',
+      select: 'username user name photo _id',
+    })
+    .execPopulate();
+  return res.status(201).json({
+    status: 'success',
+    message: populatedMessage,
+  });
+});
 exports.updatePhoto = catchAsync(async (req, res, next) => {
   const profile = await Profile.findOne({ user: req.user.id });
   await deletePhotoCloudinary(profile.photo.public_id);
@@ -172,54 +211,54 @@ exports.follow = catchAsync(async (req, res, next) => {
     });
   }
 
-  await Profile.findByIdAndUpdate(
-    req.body.id,
-    {
-      $push: { followers: req.profile },
-    },
-    { new: true }
-  );
+  const following = await Profile.findOne({ user: req.user.id });
 
-  const following = await Profile.findOneAndUpdate(
-    { user: req.user.id },
-    {
-      $push: {
-        following: req.body.id,
-      },
-    },
-    { new: true }
-  );
+  await following.following.set(req.body.name, {
+    user: req.body.id,
+  });
+  await following.save();
 
+  const user = await Profile.findById(req.body.id);
+  await user.followers.set(following.username, {
+    user: req.user.id,
+  });
+  await user.save();
   res.status(200).json({
     status: 'success',
     following,
+    user: user.followers,
   });
 });
 //Todo unfollow
 exports.unfollow = catchAsync(async (req, res, next) => {
   req.user.id === req.params.id &&
     next(new AppError('You cant unfollow yourself', 400));
-  await Profile.findByIdAndUpdate(
-    req.body.id,
-    {
-      $pull: { followers: req.profile },
-    },
-    { new: true }
-  );
+  const following = await Profile.findOne({ user: req.user.id });
+  if (!(await following.following.get(req.body.name))) {
+    return res.status(200).json({
+      status: 'success',
+      following,
+    });
+  }
+  await following.following.delete(req.body.name);
+  await following.save();
 
-  const following = await Profile.findOneAndUpdate(
-    { user: req.user.id },
-    {
-      $pull: {
-        following: req.body.id,
-      },
-    },
-    { new: true }
-  );
+  const user = await Profile.findById(req.body.id);
+
+  await user.followers.delete(following.username);
+  await user.save();
+
+  await Notification.deleteMany({
+    to: req.body.id,
+    user: following._id,
+    type: 'Follow',
+  });
 
   res.status(200).json({
     status: 'success',
+
     following,
+    user: user.followers,
   });
 });
 
@@ -242,7 +281,6 @@ exports.getFollowRequest = catchAsync(async (req, res, next) => {
   const user = await Profile.findOne({ user: req.user.id }).select(
     '+accountType'
   );
-  console.log(user);
   if (!user || user.accountType === 'public') {
     return next(new AppError('Not authorized to access this route', 400));
   }
@@ -266,5 +304,27 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
   });
   res.status(200).json({
     data: updateUser,
+  });
+});
+
+exports.getNotification = catchAsync(async (req, res, next) => {
+  const notifications = await Notification.find({ to: req.profile })
+    .sort({ createdAt: 'descending' })
+    .exec();
+  await Notification.updateMany(
+    {
+      to: req.profile,
+      seen: false,
+    },
+    {
+      seen: true,
+    },
+    {
+      new: true,
+    }
+  );
+
+  return res.status(200).json({
+    notifications,
   });
 });

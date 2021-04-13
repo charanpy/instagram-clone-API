@@ -14,28 +14,35 @@ const {
   updatePhoto,
   search,
   follow,
+  unfollow,
   userSettings,
   followRequest,
+  getProfileByName,
   acceptRequest,
   getFollowRequest,
+  getNotification
 } = require('../controllers/profileController');
 
 router.route('/search').get(search);
 
-router
-  .route('/')
-  .get(getProfiles)
-  .put([protect, profileValidations], updateProfile);
 
 router
-  .route('/profile-photo')
-  .post(protect, upload.single('image'), uploadPhoto)
-  .put(protect, upload.single('image'), updatePhoto)
-  .delete(protect, deletePhoto);
+.route('/')
+.get(getProfiles)
+.put([protect, profileValidations], updateProfile);
 
-router.route('/:userId').get(getProfileById);
+router.route('/notifications').get(protect, getProfileId, getNotification)
+
+router
+.route('/profile-photo')
+.post(protect, upload.single('image'), uploadPhoto)
+.put(protect, upload.single('image'), updatePhoto)
+.delete(protect, deletePhoto);
+
+router.route('/:name').get(getProfileByName);
 
 router.route('/follow').post(protect, getProfileId, follow);
+router.route('/unfollow').post(protect, getProfileId, unfollow);
 
 router.route('/settings').put(protect, userSettings);
 
@@ -43,7 +50,7 @@ router.route('/request-follow');
 // .post(protect, getProfileId, followRequest)
 
 router
-  .route('/request/accept-request')
-  .get(protect, getFollowRequest)
-  .post(protect, getProfileId, acceptRequest);
+.route('/request/accept-request')
+.get(protect, getFollowRequest)
+.post(protect, getProfileId, acceptRequest);
 module.exports = router;

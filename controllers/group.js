@@ -11,7 +11,6 @@ exports.createGroup = catchAsync(async (req, res, next) => {
   const group = await Group.findOne({
     $and: [{ users: { $in: req.profile } }, { users: { $in: userId } }],
   });
-  console.log(group);
   if (group) {
     return next(new AppError('Group already exist', 400));
   }
@@ -60,7 +59,6 @@ exports.getUserGroup = catchAsync(async (req, res, next) => {
 
 exports.createMessage = catchAsync(async (req, res, next) => {
   const { message, to } = req.body;
-  console.log(to);
   if (!message) {
     return next(new AppError('Message should not empty', 400));
   }

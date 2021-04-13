@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const Notification = require('./models/Notification');
 
 dotenv.config({
   path: './config.env',
@@ -7,10 +8,8 @@ dotenv.config({
 
 const app = require('./app');
 
-//^Mongoose connection
-
 mongoose
-  .connect('', {
+  .connect(process.env.DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
@@ -40,8 +39,15 @@ io.on('connection', (socket) => {
   socket.on('message', ({ groupId, message }) => {
     socket.broadcast.to(groupId).emit('message', { groupId, message });
   });
-  socket.on('seen', (message) => {
-    console.log('message', message);
+  socket.on('seen', (groupId) => {
+    socket.broadcast.to(groupId).emit('seen', groupId);
+  });
+  socket.on('render', (groupId) => {
+    socket.broadcast.to(groupId).emit('render', groupId);
+  });
+  socket.on('notification', async (msg) => {
+    const notification = await Notification.create(msg);
+    socket.broadcast.to(msg.to).emit('notification');
   });
   socket.on('disconnect', () => {
     console.log('disconnected');
