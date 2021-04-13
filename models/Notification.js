@@ -16,16 +16,17 @@ const NotificationSchema = new mongoose.Schema({
   type: {
     type: String,
     enum: ['Follow', 'Like'],
-    default: 'Like'
+    default: 'Like',
   },
   post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post',
+    default: false,
   },
   seen: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 NotificationSchema.pre(/^find/, function (next) {
