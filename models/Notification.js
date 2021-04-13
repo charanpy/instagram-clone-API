@@ -21,7 +21,6 @@ const NotificationSchema = new mongoose.Schema({
   post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post',
-    default: false,
   },
   seen: {
     type: Boolean,
