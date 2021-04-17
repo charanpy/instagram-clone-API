@@ -29,7 +29,11 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT,
+  })
+);
 cloudinary();
 
 //~routes
@@ -42,7 +46,7 @@ app.use('/api/v1/comment', commentRoute);
 app.use('/api/v1/group', groupRoute);
 
 app.all('*', (req, res, next) => {
-	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
+  next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
 //^global error handler
