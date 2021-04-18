@@ -34,8 +34,7 @@ const uploadPhotoCloudinary = async (file) => {
 
 exports.getProfiles = catchAsync(async (req, res, next) => {
   const profiles = await Profile.find({})
-    .populate('followers')
-    .populate('followings');
+    .limit(2);
   if (!profiles) {
     return next(new AppError('No profile found', 400));
   }
