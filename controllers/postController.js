@@ -107,7 +107,9 @@ exports.likePost = catchAsync(async (req, res, next) => {
   if (post.likes.includes(id)) {
     const index = post.likes.indexOf(id);
     post.likes.splice(index, 1);
-    await post.save();
+    await post.save((err) => {
+      console.log(err);
+    });
     await Notification.deleteMany({
       to: post.profile._id,
       user: id,
