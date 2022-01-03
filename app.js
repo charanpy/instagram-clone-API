@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.CLIENT,
+    origin: [process.env.CLIENT,'http://localhost:3000'],
   })
 );
 cloudinary();
