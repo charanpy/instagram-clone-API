@@ -55,7 +55,7 @@ exports.getAllPost = catchAsync(async (req, res, next) => {
 exports.getPostById = catchAsync(async (req, res, next) => {
   const post = await Post.findById(req.params.id).populate({
     path: 'profile',
-    select: '-_id -bio -website -user -_v',
+    select: '-bio -website -user -_v',
   });
 
   if (!post) {

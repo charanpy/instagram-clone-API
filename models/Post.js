@@ -3,10 +3,10 @@ const Profile = require('./Profile');
 
 const postSchema = new mongoose.Schema(
   {
-    // user: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: 'Profile',
-    // },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Profile',
+    },
     createdAt: {
       type: Date,
       default: Date.now,
