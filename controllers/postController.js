@@ -42,7 +42,8 @@ exports.createPost = catchAsync(async (req, res, next) => {
 exports.getAllPost = catchAsync(async (req, res, next) => {
   const posts = await Post.find({})
     .sort({ createdAt: 'descending' })
-    .populate('profile');
+    .populate('profile')
+    .limit(20);
   // const populatedPost = await posts.populate('profile').execPopulate();
   res.status(200).json({
     status: 'success',
@@ -52,15 +53,10 @@ exports.getAllPost = catchAsync(async (req, res, next) => {
 });
 
 exports.getPostById = catchAsync(async (req, res, next) => {
-  const post = await Post.findById(req.params.id)
-    .populate({
-      path: 'profile',
-      select: '-_id -bio -website -user -_v',
-    })
-    .populate({
-      path: 'likes',
-      select: '-_id -bio -website -_v',
-    });
+  const post = await Post.findById(req.params.id).populate({
+    path: 'profile',
+    select: '-_id -bio -website -user -_v',
+  });
 
   if (!post) {
     return next(new AppError('Post not found', 400));
